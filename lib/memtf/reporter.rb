@@ -12,10 +12,10 @@ class Memtf::Reporter
 	end
 
 	def report
-		start_analysis = Memtf::Persistor.load(Memtf::START_STAGE, group)
-		end_analysis   = Memtf::Persistor.load(Memtf::FINISH_STAGE, group)
+		group_analysis = Memtf::Analyzer.analyze_group(group)
 
-		payload = Memtf::Analyzer.compare(start_analysis, end_analysis)
+		group_analysis.each do |k,v|
 
+		end
 	end
 end

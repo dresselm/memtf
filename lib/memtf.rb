@@ -18,6 +18,7 @@ module Memtf
 
   def self.finish(options={})
     Runner.run(FINISH_STAGE, options.merge(:group => @runner.group))
+    @runner = nil
   end
 
   def self.around(options={}, &block)
