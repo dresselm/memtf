@@ -1,7 +1,7 @@
-class Memtf::Persistor
+class Memtf::Persistance
 	OUTPUT_DIR = "tmp/memtf"
 
-	def self.persist(name, group, payload)
+	def self.save(name, group, payload)
 		FileUtils.mkdir_p("#{OUTPUT_DIR}/#{group}")
     save_file = "#{OUTPUT_DIR}/#{group}/#{name}.json"
 

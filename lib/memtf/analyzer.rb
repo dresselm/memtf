@@ -1,11 +1,13 @@
 class Memtf::Analyzer
+	MB = 1024.0**2
+
 	def self.analyze(options={})
 		new(options).analyze
 	end
 
 	def self.analyze_group(group)
-		start_analysis = Memtf::Persistor.load(Memtf::START_STAGE, group)
-		end_analysis   = Memtf::Persistor.load(Memtf::FINISH_STAGE, group)
+		start_analysis = Memtf::Persistance.load(Memtf::START_STAGE, group)
+		end_analysis   = Memtf::Persistance.load(Memtf::FINISH_STAGE, group)
 
 		comparison = {}
 
@@ -61,7 +63,7 @@ class Memtf::Analyzer
 	  smh_hash = {}
 	  sorted_mem_hogs.each do |k,v|
 	    count = v.size
-	    size  = v.sum / (1024.0**2)
+	    size  = v.sum / MB
 
 	    smh_hash[k] = {
 	      count: count,

@@ -12,7 +12,7 @@ class Memtf::Runner
 
 	def run(stage)
 		analysis = Memtf::Analyzer.analyze(options)
-    Memtf::Persistor.persist(stage, group, analysis)
+    Memtf::Persistance.save(stage, group, analysis)
     analysis = nil
 
     puts Memtf::Reporter.report(group) if stage == Memtf::FINISH_STAGE
