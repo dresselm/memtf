@@ -15,18 +15,17 @@ class Memtf::Analyzer
 
 		end_analysis.each do |clazz,end_stats|
 			start_stats = start_analysis[clazz]
-      if end_stats.is_a?(Hash)
-        comparison[clazz] = {}
+      comparison[clazz] = {}
 
-        end_stats.each do |stat_key, stat_values|
-        	start_val = start_stats.nil? ? 0 : start_stats[stat_key]
-        	end_val = end_stats[stat_key]
-          comparison[clazz][stat_key] = (end_val - start_val)
-        end
-      else
-        comparison[clazz] = (end_stats - start_stats)
+      end_stats.each do |stat_key, stat_values|
+      	start_val = start_stats.nil? ? 0 : start_stats[stat_key]
+      	end_val = end_stats[stat_key]
+        comparison[clazz][stat_key] = (end_val - start_val)
       end
     end
+
+    # Determine impact of each class
+    # Hash sum(:sym)
 
     comparison
 	end
