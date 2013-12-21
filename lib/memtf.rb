@@ -31,7 +31,3 @@ require 'memtf/reporter'
 require 'memtf/persistance'
 require 'memtf/runner'
 require 'memtf/version'
-
-require 'fileutils'
-require 'multi_json'
-require 'objspace'

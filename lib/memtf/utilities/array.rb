@@ -3,3 +3,7 @@ module Memtf::Utilities::Array
 		inject(0) { |sum, elem| sum + elem }
 	end
 end
+
+unless Array.method_defined? :sum
+	Array.send :include, Memtf::Utilities::Array
+end

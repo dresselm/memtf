@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'multi_json'
+
 class Memtf::Persistance
 	OUTPUT_DIR = "tmp/memtf"
 

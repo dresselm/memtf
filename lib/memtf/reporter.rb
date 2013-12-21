@@ -1,3 +1,5 @@
+require 'colored'
+
 class Memtf::Reporter
 
 	attr_reader :group, :options
@@ -15,7 +17,7 @@ class Memtf::Reporter
 		group_analysis = Memtf::Analyzer.analyze_group(group)
 
 		group_analysis.each do |k,v|
-
+			puts [k,v].join(', ')
 		end
 	end
 end

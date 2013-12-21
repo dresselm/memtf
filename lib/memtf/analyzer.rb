@@ -1,3 +1,5 @@
+require 'objspace'
+
 class Memtf::Analyzer
 	MB = 1024.0**2
 
@@ -11,16 +13,18 @@ class Memtf::Analyzer
 
 		comparison = {}
 
-		end_analysis.each do |k,v|
-      if v.is_a?(Hash)
-        comparison[k] = {}
-        next if start_analysis[k].nil?
+		end_analysis.each do |clazz,end_stats|
+			start_stats = start_analysis[clazz]
+      if end_stats.is_a?(Hash)
+        comparison[clazz] = {}
 
-        v.each do |key, value|
-          comparison[k][key] = (v[key] - start_analysis[k][key])
+        end_stats.each do |stat_key, stat_values|
+        	start_val = start_stats.nil? ? 0 : start_stats[stat_key]
+        	end_val = end_stats[stat_key]
+          comparison[clazz][stat_key] = (end_val - start_val)
         end
       else
-        comparison[k] = (v - start_analysis[k.to_sym])
+        comparison[clazz] = (end_stats - start_stats)
       end
     end
 
