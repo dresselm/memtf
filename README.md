@@ -1,6 +1,6 @@
 # Memtf
 
-TODO: Write a gem description
+A simple utility to help isolate memory leaks in your ruby applications.
 
 ## Installation
 
