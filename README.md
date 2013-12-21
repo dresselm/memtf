@@ -17,8 +17,14 @@ Or install it yourself as:
     $ gem install memtf
 
 ## Usage
-
-TODO: Write usage instructions here
+    
+    $ bundle exec irb
+    > require 'memtf'
+    > Memtf.start
+    > # ... do some stuff ...
+    > Memtf.finish 
+    > # or, wrap around a block
+    > Memtf.around { ... }
 
 ## Contributing
 
