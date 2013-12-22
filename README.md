@@ -26,6 +26,29 @@ Or install it yourself as:
     > # or, wrap around a block
     > Memtf.around { ... }
 
+## Example
+    
+    > require 'memtf'
+    > 
+    > leaky_array = []
+    > Memtf.around do
+	>   500000.times { |i| leaky_array << "#{i % 2}-#{Time.now.to_i}" }
+    > end
+ 
+    +-----------------------------+---------+---------+--------+
+    | Class                       | Objects | Leakage | Impact |
+    +-----------------------------+---------+---------+--------+
+    | Array                       | 2189    | 4.972MB | 96.85% |
+    | RubyVM::InstructionSequence | 99      | 0.127MB | 2.47%  |
+    | Module                      | 18      | 0.017MB | 0.33%  |
+    | Class                       | 13      | 0.010MB | 0.20%  |
+    | String                      | 663007  | 0.006MB | 0.12%  |
+    | Regexp                      | 2       | 0.001MB | 0.02%  |
+    | Hash                        | 9       | 0.001MB | 0.02%  |
+    | Thread                      | 0       | 0.000MB | 0.00%  |
+    +-----------------------------+---------+---------+--------+
+
+
 ## Contributing
 
 1. Fork it
