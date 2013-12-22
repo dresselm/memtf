@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/dresselm/memtf.png)](http://travis-ci.org/dresselm/memtf)
+
 # Memtf
 
 A simple utility to help isolate memory leaks in your ruby applications.
