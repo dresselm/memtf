@@ -2,6 +2,8 @@
 
 A simple utility to help isolate memory leaks in your ruby applications.
 
+## Why do we need another 'memory profiler'?
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -16,25 +18,32 @@ Or install it yourself as:
 
     $ gem install memtf
 
+## Prerequisites
+
+The APIs used by the gem require ruby 1.9.3+.
+
 ## Usage
-    
+
     $ bundle exec irb
+
     > require 'memtf'
+
     > Memtf.start
     > # ... do some stuff ...
-    > Memtf.finish 
+    > Memtf.finish
+
     > # or, wrap around a block
     > Memtf.around { ... }
 
 ## Example
-    
+
     > require 'memtf'
-    > 
+    >
     > leaky_array = []
     > Memtf.around do
 	>   500000.times { |i| leaky_array << "#{i % 2}-#{Time.now.to_i}" }
     > end
- 
+
     +-----------------------------+---------+---------+--------+
     | Class                       | Objects | Leakage | Impact |
     +-----------------------------+---------+---------+--------+
@@ -48,6 +57,7 @@ Or install it yourself as:
     | Thread                      | 0       | 0.000MB | 0.00%  |
     +-----------------------------+---------+---------+--------+
 
+## What should I do with these resutls?
 
 ## Contributing
 
