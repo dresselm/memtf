@@ -4,6 +4,7 @@ class Memtf::Reporter
 
   attr_reader :group, :options
 
+  # @param [String] group
   def self.report(group)
     new(group).report
   end
@@ -13,6 +14,7 @@ class Memtf::Reporter
     @options = options
   end
 
+  # @return [Terminal::Table]
   def report
     Terminal::Table.new(:headings => ['Class', 'Objects', 'Leakage', 'Impact']) do |t|
       group_analysis = Memtf::Analyzer.analyze_group(group)
@@ -24,10 +26,12 @@ class Memtf::Reporter
 
   private
 
+  # @param [Number] bytes
   def to_MB(bytes)
     "%.3fMB" % [bytes]
   end
 
+  # @param [Number] num
   def to_pct(num)
     "%.2f%" % [num * 100]
   end

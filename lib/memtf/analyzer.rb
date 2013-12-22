@@ -3,10 +3,13 @@ require 'objspace'
 class Memtf::Analyzer
   MB = 1024.0**2
 
+  # @param [Hash] options
   def self.analyze(options={})
     new(options).analyze
   end
 
+  # @param [String] group
+  # @return [Hash]
   def self.analyze_group(group)
     start_analysis = Memtf::Persistance.load(Memtf::START, group)
     end_analysis   = Memtf::Persistance.load(Memtf::FINISH, group)
@@ -41,6 +44,7 @@ class Memtf::Analyzer
     @threshold = options.fetch(:threshold, 0.005)
   end
 
+  # @return [Hash]
   def analyze
     GC.start
 

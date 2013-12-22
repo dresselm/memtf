@@ -1,6 +1,8 @@
 class Memtf::Runner
 	attr_reader :group, :options, :report
 
+  # @param [String] stage
+  # @param [Hash] options
 	def self.run(stage, options={})
 		new(options).run(stage)
 	end
@@ -10,6 +12,7 @@ class Memtf::Runner
 		@options = options
 	end
 
+  # @param [String] stage
 	def run(stage)
 		analysis = Memtf::Analyzer.analyze(options)
     Memtf::Persistance.save(stage, group, analysis)

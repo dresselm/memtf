@@ -27,7 +27,7 @@ describe 'Integration tests' do
   end
 
   context 'when the memory leak is fixed' do
-    it 'should not expose the memory leak' do
+    it 'should not expose a memory leak' do
       runner = Memtf.around do
         arr = []
         LeakyHarness.new(arr).leak
