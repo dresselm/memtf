@@ -8,8 +8,8 @@ class Memtf::Analyzer
   end
 
   def self.analyze_group(group)
-    start_analysis = Memtf::Persistance.load(Memtf::START_STAGE, group)
-    end_analysis   = Memtf::Persistance.load(Memtf::FINISH_STAGE, group)
+    start_analysis = Memtf::Persistance.load(Memtf::START, group)
+    end_analysis   = Memtf::Persistance.load(Memtf::FINISH, group)
 
     comparison = {}
     total_memsize = 0

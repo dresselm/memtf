@@ -14,13 +14,12 @@ class Memtf::Reporter
   end
 
   def report
-    table = Terminal::Table.new(:headings => ['Class', 'Objects', 'Leakage', 'Impact']) do |t|
+    Terminal::Table.new(:headings => ['Class', 'Objects', 'Leakage', 'Impact']) do |t|
       group_analysis = Memtf::Analyzer.analyze_group(group)
       group_analysis.sort_by { |k,v| -v['impact'] }.each do |k,v|
         t << [k,v['count'],to_MB(v['size']),to_pct(v['impact'])]
       end
     end
-    puts table
   end
 
   private

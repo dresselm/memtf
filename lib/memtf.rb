@@ -1,6 +1,8 @@
 module Memtf
-  START_STAGE  = :start
-  FINISH_STAGE = :finish
+  # Represents the start of a run
+  START  = :start
+  # Represents the end of a run
+  FINISH = :finish
 
   class << self
     attr_accessor :runner
@@ -8,13 +10,13 @@ module Memtf
     # @param [Hash] options
     # @return [Runner]
     def start(options={})
-      self.runner = Runner.run(START_STAGE, options)
+      self.runner = Runner.run(START, options)
     end
 
     # @param [Hash] options
     def finish(options={})
       default_group = self.runner.group
-      Runner.run(FINISH_STAGE, {:group => default_group}.merge(options))
+      Runner.run(FINISH, {:group => default_group}.merge(options))
     ensure
       self.runner = nil
     end

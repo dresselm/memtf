@@ -5,7 +5,7 @@ describe Memtf do
 
   describe '.start' do
     it 'should delegate to Memtf::Runner' do
-      Memtf::Runner.should_receive(:run).with(Memtf::START_STAGE, options)
+      Memtf::Runner.should_receive(:run).with(Memtf::START, options)
 
       Memtf.start(options)
     end
@@ -22,7 +22,7 @@ describe Memtf do
 
   describe '.finish' do
     it 'should delegate to Memtf::Runner' do
-      Memtf::Runner.should_receive(:run).with(Memtf::FINISH_STAGE, hash_including(:group))
+      Memtf::Runner.should_receive(:run).with(Memtf::FINISH, hash_including(:group))
 
       Memtf.finish(options)
     end

@@ -1,5 +1,5 @@
 class Memtf::Runner
-	attr_reader :group, :options
+	attr_reader :group, :options, :report
 
 	def self.run(stage, options={})
 		new(options).run(stage)
@@ -15,7 +15,10 @@ class Memtf::Runner
     Memtf::Persistance.save(stage, group, analysis)
     analysis = nil
 
-    Memtf::Reporter.report(group) if stage == Memtf::FINISH_STAGE
+    if stage == Memtf::FINISH
+      @report = Memtf::Reporter.report(group)
+      puts @report
+    end
 
 		self
 	end
