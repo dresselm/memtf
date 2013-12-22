@@ -10,7 +10,7 @@ class Memtf::Reporter
   end
 
   def initialize(group, options={})
-    @group = group
+    @group   = group
     @options = options
   end
 
