@@ -12,6 +12,7 @@ class Memtf::Analyzer
 		end_analysis   = Memtf::Persistance.load(Memtf::FINISH_STAGE, group)
 
 		comparison = {}
+		total_memsize = 0
 
 		end_analysis.each do |clazz,end_stats|
 			start_stats = start_analysis[clazz]
@@ -20,12 +21,17 @@ class Memtf::Analyzer
       end_stats.each do |stat_key, stat_values|
       	start_val = start_stats.nil? ? 0 : start_stats[stat_key]
       	end_val = end_stats[stat_key]
-        comparison[clazz][stat_key] = (end_val - start_val)
+      	delta   = end_val - start_val
+      	total_memsize += delta if stat_key == 'size'
+        comparison[clazz][stat_key] = delta
       end
     end
 
-    # Determine impact of each class
-    # Hash sum(:sym)
+    # Determine relative impact of each class
+    comparison.keys.each do |klazz|
+    	stats = comparison[klazz]
+    	stats['impact'] = stats['size'] / total_memsize
+  	end
 
     comparison
 	end
