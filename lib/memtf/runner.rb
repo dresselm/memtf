@@ -6,7 +6,7 @@ class Memtf::Runner
 	end
 
 	def initialize(options={})
-		@group = options.delete(:group) || Time.now.to_i
+		@group   = options.delete(:group) || Time.now.to_i
 		@options = options
 	end
 
