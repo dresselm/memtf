@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe 'Integration tests' do
-  class Leak < Struct.new(:id); end
+  class Leak < Struct.new(:id, :name); end
   class LeakyHarness < Struct.new(:leaker)
     def leak
-      50000.times do |index|
-        leaker << Leak.new(index)
+      25000.times do |index|
+        leaker << Leak.new(index, "Name: #{index}")
       end
     end
   end
@@ -23,7 +23,18 @@ describe 'Integration tests' do
       LeakyHarness.new(arr).leak
     end
 
-    first_cell_value(runner).should == 'Array'
+    first_cell_value(runner).should == 'Leak'
+  end
+
+  it 'should rollup minor leaks into Other*' do
+    arr = []
+    runner = Memtf.around do
+      LeakyHarness.new(arr).leak
+    end
+
+    report  = runner.report
+    leakers = report.rows.map {|r| r.cells.first.value}
+    leakers.should include('Others*')
   end
 
   context 'when the memory leak is fixed' do
@@ -33,8 +44,7 @@ describe 'Integration tests' do
         LeakyHarness.new(arr).leak
       end
 
-      first_cell_value(runner).should_not == 'Array'
+      first_cell_value(runner).should_not == 'Leak'
     end
   end
-
 end
