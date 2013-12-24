@@ -18,12 +18,14 @@ describe 'Integration tests' do
   end
 
   it 'should expose the memory leak' do
-    arr = []
+    arr     = []
+    harness = LeakyHarness.new(arr)
     runner = Memtf.around do
-      LeakyHarness.new(arr).leak
+      harness.leak
     end
 
-    first_cell_value(runner).should == 'Leak'
+    GC.start
+    first_cell_value(runner).should == 'Array'
   end
 
   it 'should rollup minor leaks into Other*' do
@@ -44,7 +46,7 @@ describe 'Integration tests' do
         LeakyHarness.new(arr).leak
       end
 
-      first_cell_value(runner).should_not == 'Leak'
+      first_cell_value(runner).should_not == 'Array'
     end
   end
 end

@@ -70,8 +70,7 @@ class Memtf::Analyzer
     #   }
     #
     calculator = lambda do |obj|
-      clazz = obj.is_a?(Array) ? obj.first.class : obj.class
-      if clazz.respond_to?(:name)
+      if (clazz = obj.class).respond_to?(:name)
         class_name    = clazz.name
         class_stats   = (classes_stats[class_name] ||= [])
 
