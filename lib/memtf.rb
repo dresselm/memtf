@@ -1,8 +1,8 @@
 module Memtf
-  # Represents the start of a run
-  START  = :start
+  # Represents the starting
+  START = :start
   # Represents the end of a run
-  FINISH = :finish
+  STOP  = :stop
 
   class << self
     attr_accessor :runner
@@ -14,9 +14,9 @@ module Memtf
     end
 
     # @param [Hash] options
-    def finish(options={})
+    def stop(options={})
       default_group = self.runner.group
-      Runner.run(FINISH, {:group => default_group}.merge(options))
+      Runner.run(STOP, {:group => default_group}.merge(options))
     ensure
       self.runner = nil
     end
@@ -25,7 +25,7 @@ module Memtf
     def around(options={}, &block)
       start(options)
       block.call if block_given?
-      finish(options)
+      stop(options)
     end
   end
 end

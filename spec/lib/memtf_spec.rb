@@ -20,18 +20,18 @@ describe Memtf do
     end
   end
 
-  describe '.finish' do
+  describe '.stop' do
     it 'should delegate to Memtf::Runner' do
-      Memtf::Runner.should_receive(:run).with(Memtf::FINISH, hash_including(:group))
+      Memtf::Runner.should_receive(:run).with(Memtf::STOP, hash_including(:group))
 
-      Memtf.finish(options)
+      Memtf.stop(options)
     end
 
     it 'should clear the runner variable' do
       runner = Memtf.start(options)
       Memtf.runner.should_not be_nil
 
-      Memtf.finish(options)
+      Memtf.stop(options)
       Memtf.runner.should be_nil
     end
   end
@@ -39,19 +39,19 @@ describe Memtf do
   describe '.around' do
     it 'should delegate to start' do
       Memtf.should_receive(:start).with(options)
-      Memtf.stub(:finish)
+      Memtf.stub(:stop)
 
       Memtf.around(options) { a = 1 + 2 }
     end
 
     it 'should delegate to finish' do
-      Memtf.should_receive(:finish).with(options)
+      Memtf.should_receive(:stop).with(options)
 
       Memtf.around(options) { a = 1 + 2 }
     end
 
     it 'should call the given block' do
-      Memtf.stub(:finish)
+      Memtf.stub(:stop)
       lambda = lambda { a = 1 + 2 }
       lambda.should_receive(:call)
 

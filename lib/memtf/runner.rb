@@ -18,7 +18,7 @@ class Memtf::Runner
     Memtf::Persistance.save(stage, group, analysis)
     analysis = nil
 
-    if stage == Memtf::FINISH
+    if stage == Memtf::STOP
       @report = Memtf::Reporter.report(group)
       puts @report
     end

@@ -32,7 +32,7 @@ The APIs used by the gem require ruby 1.9.3+.
 
     > Memtf.start
     > # ... do some stuff ...
-    > Memtf.finish
+    > Memtf.stop
 
     > # or, wrap around a block
     > Memtf.around { ... }
@@ -59,7 +59,7 @@ The APIs used by the gem require ruby 1.9.3+.
     | Thread                      | 0       | 0.000MB | 0.00%  |
     +-----------------------------+---------+---------+--------+
 
-## What should I do with these resutls?
+## What should I do with these results?
 
 ## Contributing
 

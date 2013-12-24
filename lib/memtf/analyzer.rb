@@ -11,8 +11,8 @@ class Memtf::Analyzer
   # @param [String] group
   # @return [Hash]
   def self.analyze_group(group)
-    start_analysis = Memtf::Persistance.load(Memtf::START, group)
-    end_analysis   = Memtf::Persistance.load(Memtf::FINISH, group)
+    start_analysis = Memtf::Persistance.load(Memtf::START,  group)
+    end_analysis   = Memtf::Persistance.load(Memtf::STOP,   group)
 
     comparison = {}
     total_memsize = 0

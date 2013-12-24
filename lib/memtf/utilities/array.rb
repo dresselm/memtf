@@ -1,5 +1,4 @@
 module Memtf::Utilities::Array
-
   # @return [Number]
   def sum
 		inject(0) { |sum, elem| sum + elem }
