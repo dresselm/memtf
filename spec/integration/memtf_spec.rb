@@ -10,43 +10,49 @@ describe 'Integration tests' do
     end
   end
 
-  def first_cell_value(runner)
-    report     = runner.report
-    first_row  = report.rows.first
-    first_cell = first_row.cells.first
-    first_cell.value
+  # This is janky, but works for now as a simplistic check.
+  # Since we are at the mercy of the GC, these specs are
+  # generally going to lack any consistent output.
+  def leaker_class_names(runner)
+    report = runner.report
+    rows   = report.rows
+    rows.map { |row| row.cells.first.value }
   end
 
   it 'should expose the memory leak' do
     arr     = []
     harness = LeakyHarness.new(arr)
-    runner = Memtf.around do
+    runner  = Memtf.around do
       harness.leak
     end
 
-    GC.start
-    first_cell_value(runner).should == 'Array'
+    leaker_class_names(runner).should include('Array')
   end
 
   it 'should rollup minor leaks into Other*' do
-    arr = []
-    runner = Memtf.around do
-      LeakyHarness.new(arr).leak
+    arr     = []
+    harness = LeakyHarness.new(arr)
+    runner  = Memtf.around do
+      harness.leak
     end
 
-    report  = runner.report
-    leakers = report.rows.map {|r| r.cells.first.value}
-    leakers.should include('Others*')
+    leaker_class_names(runner).should include('Others*')
   end
 
   context 'when the memory leak is fixed' do
     it 'should not expose a memory leak' do
       runner = Memtf.around do
-        arr = []
-        LeakyHarness.new(arr).leak
+        arr     = []
+        harness = LeakyHarness.new(arr)
+        harness.leak
+
+        harness.leaker.each { |leak| leak = nil}
+        harness.leaker = nil
+        harness        = nil
+        arr            = nil
       end
 
-      first_cell_value(runner).should_not == 'Array'
+      leaker_class_names(runner).should_not include('Array')
     end
   end
 end

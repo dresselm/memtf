@@ -69,7 +69,7 @@ class Memtf::Analyzer
     #     'String' => [2,1]
     #   }
     #
-    calculator = lambda do |obj|
+    ObjectSpace.each_object do |obj|
       if (clazz = obj.class).respond_to?(:name)
         class_name    = clazz.name
         class_stats   = (classes_stats[class_name] ||= [])
@@ -79,7 +79,6 @@ class Memtf::Analyzer
         total_memsize += obj_memsize
       end
     end
-    ObjectSpace.each_object(&calculator)
 
     sorted_mem_hogs = identify_hogs(classes_stats, total_memsize)
     translate_hogs(sorted_mem_hogs)
