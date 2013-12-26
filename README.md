@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/memtf.png)](http://badge.fury.io/rb/memtf)
 [![Build Status](https://secure.travis-ci.org/dresselm/memtf.png)](http://travis-ci.org/dresselm/memtf)
 
 # Memtf
@@ -46,18 +47,18 @@ The APIs used by the gem require ruby 1.9.3+.
 	>   500000.times { |i| leaky_array << "#{i % 2}-#{Time.now.to_i}" }
     > end
 
-    +-----------------------------+---------+---------+--------+
-    | Class                       | Objects | Leakage | Impact |
-    +-----------------------------+---------+---------+--------+
-    | Array                       | 2189    | 4.972MB | 96.85% |
-    | RubyVM::InstructionSequence | 99      | 0.127MB | 2.47%  |
-    | Module                      | 18      | 0.017MB | 0.33%  |
-    | Class                       | 13      | 0.010MB | 0.20%  |
-    | String                      | 663007  | 0.006MB | 0.12%  |
-    | Regexp                      | 2       | 0.001MB | 0.02%  |
-    | Hash                        | 9       | 0.001MB | 0.02%  |
-    | Thread                      | 0       | 0.000MB | 0.00%  |
-    +-----------------------------+---------+---------+--------+
+    +-----------------------------+--------+---------+---------+---------+---------+
+    | Class                       | Impact | Leakage | Change  | Objects | Change  |
+    +-----------------------------+--------+---------+---------+---------+---------+
+    | Array                       | 96.85% | 4.972MB | 4.972MB | 2189    | 1985    |
+    | RubyVM::InstructionSequence | 2.47%  | 0.127MB | 0.000MB | 99      | 0       |
+    | Module                      | 0.33%  | 0.017MB | 0.002MB | 18      | 0       |
+    | Class                       | 0.20%  | 0.010MB | 0.001MB | 13      | 0       |
+    | String                      | 0.12%  | 0.006MB | 0.001MB | 663007  | 123650  |
+    | Regexp                      | 0.02%  | 0.001MB | 0.000MB | 2       | 0       |
+    | Hash                        | 0.02%  | 0.001MB | 0.001MB | 9       | 2       |
+    | Thread                      | 0.00%  | 0.000MB | 0.000MB | 0       | 0       |
+    +-----------------------------+--------+---------+---------+---------+---------+
 
 ## What should I do with these results?
 

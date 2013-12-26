@@ -2,6 +2,8 @@ require 'terminal-table'
 
 class Memtf::Reporter
 
+  HEADERS = ['Class', 'Impact', 'Leakage', 'Change', 'Objects', 'Change']
+
   attr_reader :group, :options
 
   # @param [String] group
@@ -16,10 +18,15 @@ class Memtf::Reporter
 
   # @return [Terminal::Table]
   def report
-    Terminal::Table.new(:headings => ['Class', 'Objects', 'Leakage', 'Impact']) do |t|
+    Terminal::Table.new(:headings => HEADERS) do |t|
       group_analysis = Memtf::Analyzer.analyze_group(group)
       group_analysis.sort_by { |k,v| -v['impact'] }.each do |k,v|
-        t << [k,v['count'],to_MB(v['size']),to_pct(v['impact'])]
+        t << [k,
+              to_pct(v['impact']),
+              to_MB(v['size']),
+              to_MB(v['size_delta']),
+              v['count'],
+              v['count_delta']]
       end
     end
   end

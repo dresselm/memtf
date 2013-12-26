@@ -29,10 +29,11 @@ class Memtf::Analyzer
         start_val = start_stats.nil? ? 0 : start_stats[stat_key]
         end_val   = end_stats[stat_key]
         delta     = end_val - start_val
-        comparison[clazz][stat_key] = delta
 
-        # Perhaps just compare this
-        total_memsize += delta if stat_key == 'size'
+        comparison[clazz][stat_key]            = end_val
+        comparison[clazz]["#{stat_key}_delta"] = delta
+
+        total_memsize += end_val if stat_key == 'size'
       end
     end
 
