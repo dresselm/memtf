@@ -1,6 +1,10 @@
+# Encapsulates the multiple steps required to accomplish
+# Memtf analysis and reporting.
 class Memtf::Runner
 	attr_reader :group, :options, :report
 
+  # Run the Memtf analysis and reporting.
+  #
   # @param [String] stage
   # @param [Hash] options
 	def self.run(stage, options={})
@@ -12,7 +16,10 @@ class Memtf::Runner
 		@options = options
 	end
 
+  # Run the Memtf analysis and reporting.
+  #
   # @param [String] stage
+  # @return [Memtf::Runner]
 	def run(stage)
 		analysis = Memtf::Analyzer.analyze(options)
     Memtf::Persistance.save(stage, group, analysis)
