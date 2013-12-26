@@ -1,18 +1,25 @@
+# A simple utility to help isolate memory leaks.  Two
+# memory snapshots are compared to determine which
+# classes, if any, are leaking.
 module Memtf
-  # Represents the starting
+  # Represents the starting memory snapshot
   START = :start
-  # Represents the end of a run
+  # Represents the ending memory snapshot
   STOP  = :stop
 
   class << self
     attr_accessor :runner
 
+    # Generate an initial memory snapshot.
+    #
     # @param [Hash] options
     # @return [Runner]
     def start(options={})
       self.runner = Runner.run(START, options)
     end
 
+    # Generate a final memory snapshot.
+    #
     # @param [Hash] options
     def stop(options={})
       default_group = self.runner.group
@@ -21,6 +28,9 @@ module Memtf
       self.runner = nil
     end
 
+    # Generate an initial memory snapshot, execute
+    # the block, then generate the final memory snapshot.
+    #
     # @param [Hash] options
     def around(options={}, &block)
       start(options)

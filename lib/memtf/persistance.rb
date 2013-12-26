@@ -1,10 +1,15 @@
 require 'fileutils'
 require 'multi_json'
 
+# Encapsulates the logic and mechanism for saving
+# and loading raw memory data.
 class Memtf::Persistance
+  # The directory where raw data is stored
   OUTPUT_DIR = "tmp/memtf"
 
   class << self
+    # Serialize group data to the filesystem.
+    #
     # @param [String] name
     # @param [String] group
     # @param [Object] payload
@@ -18,6 +23,8 @@ class Memtf::Persistance
       end
     end
 
+    # De-serialize group data from the filesystem.
+    #
     # @param [String] name
     # @param [String] group
     # @return [Object]

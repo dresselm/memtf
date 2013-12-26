@@ -1,10 +1,16 @@
 require 'objspace'
 
+# Encapsulates logic that measures the memory footprint of all
+# objects at a given point in time and compares the memory footprints
+# of two points in time.
 class Memtf::Analyzer
 
   attr_reader :threshold, :filter
 
+  # The threshold of total memory consumption required
+  # to be included in the output
   DEFAULT_THRESHOLD = 0.005
+  # Represents 1 million bytes
   MB = 1024.0**2
 
   # @param [Hash] options
@@ -12,6 +18,9 @@ class Memtf::Analyzer
     new(options).analyze
   end
 
+  # Compare the memory footprints for the start and end memory snapshots
+  # within the same snapshot group.
+  #
   # @param [String] group
   # @return [Hash]
   def self.analyze_group(group)
@@ -51,8 +60,12 @@ class Memtf::Analyzer
     @threshold = options.fetch(:threshold, DEFAULT_THRESHOLD)
   end
 
+  # Determine the memory footprint of each class and filter out classes
+  # that do not meet the configured threshold.
+  #
   # @return [Hash]
   def analyze
+    # Signal a new GC to attempt to clear out non-leaked memory
     GC.start
 
     classes_stats = {}
@@ -77,6 +90,8 @@ class Memtf::Analyzer
 
         obj_memsize   = ObjectSpace.memsize_of(obj)
         class_stats   << obj_memsize
+
+        # Note: could also use ObjectSpace.memsize_of_all(clazz)
         total_memsize += obj_memsize
       end
     end
