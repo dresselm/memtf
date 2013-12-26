@@ -1,11 +1,23 @@
 require 'terminal-table'
 
+# Encapsulates the formatting and output of Memtf analysis.
+#
+# Example Report:
+#
+#   +-----------------------------+--------+---------+---------+---------+---------+
+#   | Class                       | Impact | Leakage | Change  | Objects | Change  |
+#   +-----------------------------+--------+---------+---------+---------+---------+
+#   | Array                       | 96.85% | 4.972MB | 4.972MB | 2189    | 1985    |
+#   ...
+#
 class Memtf::Reporter
-
+  # The report table headers
   HEADERS = ['Class', 'Impact', 'Leakage', 'Change', 'Objects', 'Change']
 
   attr_reader :group, :options
 
+  # Print the analysis in a concise tabular format.
+  #
   # @param [String] group
   def self.report(group)
     new(group).report
@@ -16,6 +28,8 @@ class Memtf::Reporter
     @options = options
   end
 
+  # Print the analysis in a concise tabular format.
+  #
   # @return [Terminal::Table]
   def report
     Terminal::Table.new(:headings => HEADERS) do |t|
