@@ -1,3 +1,4 @@
+# Common utilities
 module Memtf::Utilities
 end
 
