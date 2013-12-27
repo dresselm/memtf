@@ -20,17 +20,17 @@ describe Memtf::Persistance do
 
     context 'when the group directory does not exist' do
       it 'should create the directory' do
-        expect(Dir.exist?(expected_dir)).to be_false
+        Dir.exist?(expected_dir).should == false
         described_class.save(name, group, payload)
-        expect(Dir.exist?(expected_dir)).to be_true
+        Dir.exist?(expected_dir).should == true
       end
     end
 
     it 'should save the payload' do
       expected_file_path = "#{expected_dir}/#{name}-#{pid}.json"
-      expect(File.exist?(expected_file_path)).to be_false
+      File.exist?(expected_file_path).should == false
       described_class.save(name, group, payload)
-      expect(File.exist?(expected_file_path)).to be_true
+      File.exist?(expected_file_path).should == true
     end
 
     it 'should encode the payload' do
