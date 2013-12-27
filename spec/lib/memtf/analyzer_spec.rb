@@ -5,7 +5,7 @@ describe Memtf::Analyzer do
 
   describe '.analyze' do
     it 'should create a new Analyzer' do
-      mock_analyzer = mock(described_class)
+      mock_analyzer = double(described_class)
       mock_analyzer.stub(:analyze)
       described_class.should_receive(:new).with(options).and_return(mock_analyzer)
 
@@ -13,7 +13,7 @@ describe Memtf::Analyzer do
     end
 
     it 'should delegate to analyze' do
-      mock_analyzer = mock(described_class)
+      mock_analyzer = double(described_class)
       described_class.stub(:new).with(options).and_return(mock_analyzer)
       mock_analyzer.should_receive(:analyze).and_return({})
 
