@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Memtf::Analyzer do
-  describe '.analyze' do
-    let(:options)  { {} }
+  let(:options)   { {} }
 
+  describe '.analyze' do
     it 'should create a new Analyzer' do
       mock_analyzer = mock(described_class)
       mock_analyzer.stub(:analyze)
@@ -91,10 +91,77 @@ describe Memtf::Analyzer do
   end
 
   describe '#analyze' do
-    it 'should try to garbage collect'
-    it 'should calculate the total memory allocated to each class'
-    it 'should isolate classes that exceed a given memory threshold'
-    it 'should generate an aggregated Others* row'
-    it 'should translate the results into a simple hash'
+    class StubbedMemoryTracker
+      STRING1 = 'some_string'
+      STRING2 = 'some_other_string'
+      ARRAY1  = [1,2,3,4,5,6]
+      HASH1   = {'foo' => 'bar'}
+
+      def self.iterate(&block)
+        [STRING1, STRING2, ARRAY1, HASH1].each do |obj|
+          block.call(obj)
+        end
+      end
+
+      def self.size_of(obj)
+        case obj
+        when STRING1 then convert_to_mb(10)
+        when STRING2 then convert_to_mb(20)
+        when ARRAY1  then convert_to_mb(90)
+        when HASH1   then convert_to_mb(0.005)
+        else
+          0
+        end
+      end
+
+      def self.convert_to_mb(integer)
+        integer * 1024**2
+      end
+    end
+
+    let(:options)  {
+      {
+        :memory_tracker => StubbedMemoryTracker,
+        :threshold      => 0.05
+      }
+    }
+    let(:analyzer) { described_class.new(options) }
+
+    it 'should try to initiate garbage collection' do
+      GC.should_receive(:start)
+
+      analyzer.analyze
+    end
+
+    it 'should calculate the total memory allocated to each class' do
+      analysis = analyzer.analyze
+
+      analysis.should_not be_nil
+      analysis['Array'][:size].should  == 90.0
+      analysis['String'][:size].should == 20.0 + 10.0
+    end
+
+    it 'should calculate the number of objects of each class in memory' do
+      analysis = analyzer.analyze
+
+      analysis.should_not be_nil
+      analysis['Array'][:count].should  == 1
+      analysis['String'][:count].should == 2
+    end
+
+    it 'should isolate classes that exceed a given memory threshold' do
+      analysis = analyzer.analyze
+
+      analysis.should_not be_nil
+      analysis['Hash'].should be_nil # doesn't meet threshold
+    end
+
+    it 'should generate an aggregated Others* row' do
+      analysis = analyzer.analyze
+
+      analysis.should_not be_nil
+      analysis['Others*'][:size].should == 0.005
+      analysis['Others*'][:count].should == 1
+    end
   end
 end
