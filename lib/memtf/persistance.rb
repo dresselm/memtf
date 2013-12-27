@@ -17,9 +17,9 @@ class Memtf::Persistance
       group_directory = group_dir(group)
       FileUtils.mkdir_p("#{group_directory}")
 
-      save_file = "#{group_directory}/#{name}.json"
+      save_file = "#{group_directory}/#{name}-#{Process.pid}.json"
       File.open(save_file, 'w+') do |f|
-        f.puts ::MultiJson.encode(payload)
+        f.print ::MultiJson.encode(payload)
       end
     end
 
@@ -29,7 +29,7 @@ class Memtf::Persistance
     # @param [String] group
     # @return [Object]
     def load(name, group)
-      load_file = "#{group_dir(group)}/#{name}.json"
+      load_file = "#{group_dir(group)}/#{name}-#{Process.pid}.json"
       ::MultiJson.decode File.read(load_file)
     end
 
