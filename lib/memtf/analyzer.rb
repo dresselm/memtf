@@ -18,7 +18,10 @@ class Memtf::Analyzer
   #
   # @param [Hash] options
   def self.analyze(options={})
-    new(options).analyze
+    new_anal = new(options)
+    # require 'pry'
+    # binding.pry
+    new_anal.analyze
   end
 
   # Compare the memory footprints for the start and end memory snapshots

@@ -2,8 +2,23 @@ require 'spec_helper'
 
 describe Memtf::Analyzer do
   describe '.analyze' do
-    it 'should create a new Analyzer'
-    it 'should delegate to analyze'
+    let(:options)  { {} }
+
+    it 'should create a new Analyzer' do
+      mock_analyzer = mock(described_class)
+      mock_analyzer.stub(:analyze)
+      described_class.should_receive(:new).with(options).and_return(mock_analyzer)
+
+      described_class.analyze(options)
+    end
+
+    it 'should delegate to analyze' do
+      mock_analyzer = mock(described_class)
+      described_class.stub(:new).with(options).and_return(mock_analyzer)
+      mock_analyzer.should_receive(:analyze).and_return({})
+
+      described_class.analyze(options)
+    end
   end
 
   describe '.analyze_group' do
@@ -29,21 +44,21 @@ describe Memtf::Analyzer do
       Memtf::Persistance.should_receive(:load).with(Memtf::START,group).and_return(start_data)
       Memtf::Persistance.stub(:load).with(Memtf::STOP,group).and_return(end_data)
 
-      Memtf::Analyzer.analyze_group(group)
+      described_class.analyze_group(group)
     end
 
     it 'should load the end data' do
       Memtf::Persistance.stub(:load).with(Memtf::START,group).and_return(start_data)
       Memtf::Persistance.should_receive(:load).with(Memtf::STOP,group).and_return(end_data)
 
-      Memtf::Analyzer.analyze_group(group)
+      described_class.analyze_group(group)
     end
 
     it 'should compare the start and end object counts' do
       Memtf::Persistance.stub(:load).with(Memtf::START,group).and_return(start_data)
       Memtf::Persistance.stub(:load).with(Memtf::STOP,group).and_return(end_data)
 
-      output       = Memtf::Analyzer.analyze_group(group)
+      output       = described_class.analyze_group(group)
       count_deltas = output.values.map { |o| o['count_delta']}
       count_deltas.should_not be_empty
       count_deltas.size.should == 4
@@ -54,7 +69,7 @@ describe Memtf::Analyzer do
       Memtf::Persistance.stub(:load).with(Memtf::START,group).and_return(start_data)
       Memtf::Persistance.stub(:load).with(Memtf::STOP,group).and_return(end_data)
 
-      output      = Memtf::Analyzer.analyze_group(group)
+      output      = described_class.analyze_group(group)
       size_deltas = output.values.map { |o| o['size_delta']}
       size_deltas.should_not be_empty
       size_deltas.size.should == 4
@@ -65,7 +80,7 @@ describe Memtf::Analyzer do
       Memtf::Persistance.stub(:load).with(Memtf::START,group).and_return(start_data)
       Memtf::Persistance.stub(:load).with(Memtf::STOP,group).and_return(end_data)
 
-      output  = Memtf::Analyzer.analyze_group(group)
+      output  = described_class.analyze_group(group)
       impacts = output.values.map { |o| o['impact'] }
       impacts.should_not be_empty
       impacts.size.should == 4
