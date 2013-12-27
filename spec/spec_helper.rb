@@ -28,4 +28,3 @@ RSpec.configure do |config|
   config.before(:all) { silence_output }
   config.after(:all)  { enable_output  }
 end
-

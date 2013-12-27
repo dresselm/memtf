@@ -13,6 +13,9 @@ class Memtf::Analyzer
   # Represents 1 million bytes
   MB = 1024.0**2
 
+  # Determine the memory footprint of each class and filter out classes
+  # that do not meet the configured threshold.
+  #
   # @param [Hash] options
   def self.analyze(options={})
     new(options).analyze
@@ -24,8 +27,8 @@ class Memtf::Analyzer
   # @param [String] group
   # @return [Hash]
   def self.analyze_group(group)
-    start_analysis = Memtf::Persistance.load(Memtf::START,  group)
-    end_analysis   = Memtf::Persistance.load(Memtf::STOP,   group)
+    start_analysis = Memtf::Persistance.load(Memtf::START, group)
+    end_analysis   = Memtf::Persistance.load(Memtf::STOP,  group)
 
     comparison    = {}
     total_memsize = 0
@@ -49,7 +52,7 @@ class Memtf::Analyzer
     # Determine the relative memory impact of each class
     comparison.keys.each do |klazz|
       stats           = comparison[klazz]
-      stats['impact'] = stats['size'] / total_memsize
+      stats['impact'] = (stats['size']*1.0) / total_memsize
     end
 
     comparison
