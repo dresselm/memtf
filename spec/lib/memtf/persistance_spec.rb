@@ -20,23 +20,23 @@ describe Memtf::Persistance do
 
     context 'when the group directory does not exist' do
       it 'should create the directory' do
-        Dir.exist?(expected_dir).should be_false
+        expect(Dir.exist?(expected_dir)).to be_false
         described_class.save(name, group, payload)
-        Dir.exist?(expected_dir).should be_true
+        expect(Dir.exist?(expected_dir)).to be_true
       end
     end
 
     it 'should save the payload' do
       expected_file_path = "#{expected_dir}/#{name}-#{pid}.json"
-      File.exist?(expected_file_path).should be_false
+      expect(File.exist?(expected_file_path)).to be_false
       described_class.save(name, group, payload)
-      File.exist?(expected_file_path).should be_true
+      expect(File.exist?(expected_file_path)).to be_true
     end
 
     it 'should encode the payload' do
       described_class.save(name, group, payload)
       f = File.read(expected_file_path)
-      f.should == "{\"test\":\"payload\"}"
+      expect(f).to eq "{\"test\":\"payload\"}"
     end
   end
 
@@ -50,12 +50,12 @@ describe Memtf::Persistance do
 
     it 'should load the payload' do
       payload = described_class.load(name, group)
-      payload.should_not be_nil
+      expect(payload).not_to be_nil
     end
 
     it 'should decode the payload' do
       payload = described_class.load(name, group)
-      payload.should == { 'test' => 'payload' }
+      expect(payload).to eq({ 'test' => 'payload' })
     end
 
     context 'when the file does not exist' do
