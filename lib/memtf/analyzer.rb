@@ -1,11 +1,9 @@
-require 'objspace'
-
 # Encapsulates logic that measures the memory footprint of all
 # objects at a given point in time and compares the memory footprints
 # of two points in time.
 class Memtf::Analyzer
 
-  attr_reader :threshold, :filter
+  attr_reader :threshold, :filter, :memory_tracker
 
   # The threshold of total memory consumption required
   # to be included in the output
@@ -13,6 +11,9 @@ class Memtf::Analyzer
   # Represents 1 million bytes
   MB = 1024.0**2
 
+  # Determine the memory footprint of each class and filter out classes
+  # that do not meet the configured threshold.
+  #
   # @param [Hash] options
   def self.analyze(options={})
     new(options).analyze
@@ -24,8 +25,8 @@ class Memtf::Analyzer
   # @param [String] group
   # @return [Hash]
   def self.analyze_group(group)
-    start_analysis = Memtf::Persistance.load(Memtf::START,  group)
-    end_analysis   = Memtf::Persistance.load(Memtf::STOP,   group)
+    start_analysis = Memtf::Persistance.load(Memtf::START, group)
+    end_analysis   = Memtf::Persistance.load(Memtf::STOP,  group)
 
     comparison    = {}
     total_memsize = 0
@@ -47,17 +48,19 @@ class Memtf::Analyzer
     end
 
     # Determine the relative memory impact of each class
+    # TODO look into object count impact via ObjectSpace.count_objects
     comparison.keys.each do |klazz|
       stats           = comparison[klazz]
-      stats['impact'] = stats['size'] / total_memsize
+      stats['impact'] = (stats['size']*1.0) / total_memsize
     end
 
     comparison
   end
 
   def initialize(options={})
-    @filter    = options[:filter]
-    @threshold = options.fetch(:threshold, DEFAULT_THRESHOLD)
+    @filter         = options[:filter]
+    @threshold      = options.fetch(:threshold, DEFAULT_THRESHOLD)
+    @memory_tracker = options.fetch(:memory_tracker, Memtf::Analyzer::Memory)
   end
 
   # Determine the memory footprint of each class and filter out classes
@@ -66,9 +69,11 @@ class Memtf::Analyzer
   # @return [Hash]
   def analyze
     # Signal a new GC to attempt to clear out non-leaked memory
+    # TODO investigate ObjectSpace.garbage_collect
     GC.start
 
     classes_stats = {}
+    # TODO investigate ObjectSpace.count_objects_size[:TOTAL]
     total_memsize = 0
 
     # Track the memory footprint of each class
@@ -83,12 +88,12 @@ class Memtf::Analyzer
     #     'String' => [2,1]
     #   }
     #
-    ObjectSpace.each_object do |obj|
+    memory_tracker.iterate do |obj|
       if (clazz = obj.class).respond_to?(:name)
         class_name    = clazz.name
         class_stats   = (classes_stats[class_name] ||= [])
 
-        obj_memsize   = ObjectSpace.memsize_of(obj)
+        obj_memsize   = memory_tracker.size_of(obj)
         class_stats   << obj_memsize
 
         # Note: could also use ObjectSpace.memsize_of_all(clazz)
@@ -160,3 +165,5 @@ class Memtf::Analyzer
   end
 
 end
+
+require 'memtf/analyzer/memory'

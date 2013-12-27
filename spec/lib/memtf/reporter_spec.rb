@@ -2,23 +2,23 @@ require 'spec_helper'
 
 describe Memtf::Reporter do
 
-  let(:group) { 'test_group' }
+  let(:group)    { 'test_group' }
   let(:reporter) { described_class.new(group) }
 
   describe '.report' do
 
     it 'should initialize a new reporter' do
       reporter.stub(:report)
-      Memtf::Reporter.should_receive(:new).with(group).and_return(reporter)
+      described_class.should_receive(:new).with(group).and_return(reporter)
 
-      Memtf::Reporter.report(group)
+      described_class.report(group)
     end
 
     it 'should delegate to report' do
-      Memtf::Reporter.stub(:new).and_return(reporter)
+      described_class.stub(:new).and_return(reporter)
       reporter.should_receive(:report)
 
-      Memtf::Reporter.report(group)
+      described_class.report(group)
     end
   end
 
