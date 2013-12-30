@@ -1,12 +1,12 @@
 require 'spec_helper'
+require 'pry'
+require 'csv'
 
 describe 'Integration tests' do
-  class Leak < Struct.new(:id, :name); end
-  class LeakyHarness < Struct.new(:leaker)
-    def leak
-      25000.times do |index|
-        leaker << Leak.new(index, "Name: #{index}")
-      end
+  class LeakyHash < Hash; end
+  class LeakyArray < Array
+    def <<(other)
+      push(other)
     end
   end
 
@@ -20,13 +20,43 @@ describe 'Integration tests' do
   end
 
   it 'should expose the memory leak' do
-    arr     = []
-    harness = LeakyHarness.new(arr)
+    arr = LeakyArray.new
+    # harness = LeakyHarness.new(arr)
+    # 250000.times do |index|
+      # instance_variable_set(:"@a#{index}", nil)
+    # end
     runner  = Memtf.around do
-      harness.leak
+      100.times do |index|
+        # other_lead = index == 0 ? nil : instance_variable_get("@a#{index-1}")
+        # instance_variable_set(:"@a#{index}", Leak.new(index))
+        arr << LeakyHash.new(:leaky => true)
+      end
+      # harness.leak
     end
 
-    leaker_class_names(runner).should include('Array')
+    all_classes = ObjectSpace.each_object(Class).map(&:class).uniq
+    CSV.open('tmp.csv','w') do |csv|
+      csv << ['ID','CLASS','DESCENDENTS','SIZE','INSPECT'] # 'File','Line','Method', 'Generation', 'ClassPath'
+      ObjectSpace.each_object do |obj|
+        class_name = obj.class
+        descendents = []
+        if (klass = obj.class).is_a?(Class)
+          class_name  = klass.name
+          descendents = all_classes.select { |clazz| clazz < klass }.join(',')
+        end
+        memsize    = ObjectSpace.memsize_of(obj)
+        # sourcefile = ObjectSpace.allocation_sourcefile(obj)
+        # linenum    = ObjectSpace.allocation_sourceline(obj)
+        # methodid   = ObjectSpace.allocation_method_id(obj)
+        # generation = ObjectSpace.allocation_generation(obj)
+        # classpath  = ObjectSpace.allocation_class_path(obj)
+        csv << [obj.object_id, class_name, descendents, memsize, obj.inspect] #, sourcefile, linenum, methodid, generation, classpath,
+      end
+    end
+
+    # binding.pry
+
+    leaker_class_names(runner).should include('Leak')
   end
 
   it 'should rollup minor leaks into Other*' do
@@ -50,9 +80,13 @@ describe 'Integration tests' do
         harness.leaker = nil
         harness        = nil
         arr            = nil
+
+        Leak::CONST_LEAK = nil
+
+        GC.start
       end
 
-      leaker_class_names(runner).should_not include('Array')
+      leaker_class_names(runner).should_not include('String')
     end
   end
 end

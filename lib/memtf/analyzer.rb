@@ -71,6 +71,7 @@ class Memtf::Analyzer
     # Signal a new GC to attempt to clear out non-leaked memory
     # TODO investigate ObjectSpace.garbage_collect
     GC.start
+    # ObjectSpace.trace_object_allocations_start
 
     classes_stats = {}
     # TODO investigate ObjectSpace.count_objects_size[:TOTAL]
@@ -98,8 +99,12 @@ class Memtf::Analyzer
 
         # Note: could also use ObjectSpace.memsize_of_all(clazz)
         total_memsize += obj_memsize
+
+        class_name = nil
       end
     end
+
+    # ObjectSpace.trace_object_allocations_stop
 
     sorted_mem_hogs = identify_hogs(classes_stats, total_memsize)
     translate_hogs(sorted_mem_hogs)
