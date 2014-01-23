@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe 'Integration tests' do
+  class LeakyArray < Array; end
   class Leak < Struct.new(:id, :name); end
   class LeakyHarness < Struct.new(:leaker)
     def leak
@@ -20,17 +21,17 @@ describe 'Integration tests' do
   end
 
   it 'should expose the memory leak' do
-    arr     = []
+    arr     = LeakyArray.new
     harness = LeakyHarness.new(arr)
     runner  = Memtf.around do
       harness.leak
     end
 
-    leaker_class_names(runner).should include('Array')
+    leaker_class_names(runner).should include('LeakyArray')
   end
 
   it 'should rollup minor leaks into Other*' do
-    arr     = []
+    arr     = LeakyArray.new
     harness = LeakyHarness.new(arr)
     runner  = Memtf.around do
       harness.leak
@@ -42,7 +43,7 @@ describe 'Integration tests' do
   context 'when the memory leak is fixed' do
     it 'should not expose a memory leak' do
       runner = Memtf.around do
-        arr     = []
+        arr     = LeakyArray.new
         harness = LeakyHarness.new(arr)
         harness.leak
 
@@ -52,7 +53,7 @@ describe 'Integration tests' do
         arr            = nil
       end
 
-      leaker_class_names(runner).should_not include('Array')
+      leaker_class_names(runner).should_not include('LeakyArray')
     end
   end
 end
