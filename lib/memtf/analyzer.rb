@@ -7,9 +7,11 @@ class Memtf::Analyzer
 
   # The threshold of total memory consumption required
   # to be included in the output
-  DEFAULT_THRESHOLD = 0.005
+  DEFAULT_THRESHOLD = 0.01
   # Represents 1 million bytes
   MB = 1024.0**2
+  #
+  EXCLUDED_CLASSES = [RubyVM::InstructionSequence]
 
   # Determine the memory footprint of each class and filter out classes
   # that do not meet the configured threshold.
