@@ -25,9 +25,9 @@ describe Memtf::Reporter do
   describe '#report' do
     let(:analysis) {
       {
-        'key1' => {'size' => 2,  'size_delta' => 0,  'count' => 1000, 'count_delta' => 50,  'impact' => 0.02},
-        'key2' => {'size' => 78, 'size_delta' => 76, 'count' => 600,  'count_delta' => 500, 'impact' => 0.78},
-        'key3' => {'size' => 20, 'size_delta' => 15, 'count' => 50,   'count_delta' => 25,  'impact' => 0.20}
+        'key1' => {'size' => 2,  'count' => 1000, 'impact' => 0.02},
+        'key2' => {'size' => 78, 'count' => 600,  'impact' => 0.78},
+        'key3' => {'size' => 20, 'count' => 50,   'impact' => 0.20}
       }
     }
 
@@ -48,7 +48,7 @@ describe Memtf::Reporter do
       Memtf::Analyzer.stub(:analyze_group).with(group).and_return(analysis)
 
       table = reporter.report
-      table.headings.cells.map(&:value).should == ["Class", "Impact", "Leakage", "Change", "Objects", "Change"]
+      table.headings.cells.map(&:value).should == ["Class", "Impact", "LeakageSize", "NumObjects"]
     end
 
     it 'should convert impact to a human readable percentage' do
@@ -63,7 +63,6 @@ describe Memtf::Reporter do
 
       table = reporter.report
       table.rows.map {|r| r.cells[2].value }.should == ['78.000MB','20.000MB','2.000MB']
-      table.rows.map {|r| r.cells[3].value }.should == ['76.000MB','15.000MB','0.000MB']
     end
 
   end

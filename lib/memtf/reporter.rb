@@ -4,15 +4,15 @@ require 'terminal-table'
 #
 # Example Report:
 #
-#   +-----------------------------+--------+---------+---------+---------+---------+
-#   | Class                       | Impact | Leakage | Change  | Objects | Change  |
-#   +-----------------------------+--------+---------+---------+---------+---------+
-#   | Array                       | 96.85% | 4.972MB | 4.972MB | 2189    | 1985    |
+#   +---------+--------+-------------+------------+
+#   | Class   | Impact | LeakageSize | NumObjects |
+#   +---------+--------+-------------+------------+
+#   | Array   | 96.85% | 4.972MB     | 2189       |
 #   ...
 #
 class Memtf::Reporter
   # The report table headers
-  HEADERS = ['Class', 'Impact', 'Leakage', 'Change', 'Objects', 'Change']
+  HEADERS = ['Class', 'Impact', 'LeakageSize', 'NumObjects']
 
   attr_reader :group, :options
 
@@ -38,9 +38,7 @@ class Memtf::Reporter
         t << [k,
               to_pct(v['impact']),
               to_MB(v['size']),
-              to_MB(v['size_delta']),
-              v['count'],
-              v['count_delta']]
+              v['count']]
       end
     end
   end

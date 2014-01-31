@@ -20,37 +20,36 @@ describe 'Integration tests' do
     rows.map { |row| row.cells.first.value }
   end
 
+  before(:each) do
+    @leaky_array = LeakyArray.new
+    @harness     = LeakyHarness.new(@leaky_array)
+  end
+
   it 'should expose the memory leak' do
-    arr     = LeakyArray.new
-    harness = LeakyHarness.new(arr)
     runner  = Memtf.around do
-      harness.leak
+      @harness.leak
     end
 
     leaker_class_names(runner).should include('LeakyArray')
   end
 
   it 'should rollup minor leaks into Other*' do
-    arr     = LeakyArray.new
-    harness = LeakyHarness.new(arr)
     runner  = Memtf.around do
-      harness.leak
+      @harness.leak
     end
 
     leaker_class_names(runner).should include('Others*')
   end
 
   context 'when the memory leak is fixed' do
-    it 'should not expose a memory leak' do
+    it 'should not display the leak' do
       runner = Memtf.around do
-        arr     = LeakyArray.new
-        harness = LeakyHarness.new(arr)
-        harness.leak
+        @harness.leak
 
-        harness.leaker.each { |leak| leak = nil}
-        harness.leaker = nil
-        harness        = nil
-        arr            = nil
+        @harness.leaker.each { |leak| leak = nil}
+        @harness.leaker = nil
+        @harness        = nil
+        @leaky_array    = nil
       end
 
       leaker_class_names(runner).should_not include('LeakyArray')

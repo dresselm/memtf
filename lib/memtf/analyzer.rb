@@ -27,36 +27,17 @@ class Memtf::Analyzer
   # @param [String] group
   # @return [Hash]
   def self.analyze_group(group)
-    start_analysis = Memtf::Persistance.load(Memtf::START, group)
-    end_analysis   = Memtf::Persistance.load(Memtf::STOP,  group)
-
-    comparison    = {}
-    total_memsize = 0
-
-    end_analysis.each do |clazz,end_stats|
-      start_stats       = start_analysis[clazz]
-      comparison[clazz] = {}
-
-      end_stats.each do |stat_key, stat_values|
-        start_val = start_stats.nil? ? 0 : start_stats[stat_key]
-        end_val   = end_stats[stat_key]
-        delta     = end_val - start_val
-
-        comparison[clazz][stat_key]            = end_val
-        comparison[clazz]["#{stat_key}_delta"] = delta
-
-        total_memsize += end_val if stat_key == 'size'
-      end
+    end_analysis  = Memtf::Persistance.load(Memtf::STOP,group)
+    total_memsize = end_analysis.inject(0) do |sum, (clazz, end_stats)|
+      sum += end_stats['size']
     end
 
     # Determine the relative memory impact of each class
-    # TODO look into object count impact via ObjectSpace.count_objects
-    comparison.keys.each do |klazz|
-      stats           = comparison[klazz]
-      stats['impact'] = (stats['size']*1.0) / total_memsize
+    end_analysis.each do |clazz, end_stats|
+      end_stats['impact'] = (end_stats['size']*1.0) / total_memsize
     end
 
-    comparison
+    end_analysis
   end
 
   def initialize(options={})
@@ -91,19 +72,21 @@ class Memtf::Analyzer
     #   }
     #
     memory_tracker.iterate do |obj|
-      if (clazz = obj.class).respond_to?(:name)
-        class_name    = clazz.name
-        class_stats   = (classes_stats[class_name] ||= [])
+      if obj.respond_to?(:class) && (clazz = obj.class).respond_to?(:name)
+        unless EXCLUDED_CLASSES.include?(clazz)
+          class_name    = clazz.name
+          class_stats   = (classes_stats[class_name] ||= [])
 
-        obj_memsize   = memory_tracker.size_of(obj)
-        class_stats   << obj_memsize
+          obj_memsize   = memory_tracker.size_of(obj)
+          class_stats   << obj_memsize
 
-        # Note: could also use ObjectSpace.memsize_of_all(clazz)
-        total_memsize += obj_memsize
+          # Note: could also use ObjectSpace.memsize_of_all(clazz)
+          total_memsize += obj_memsize
+        end
       end
     end
 
-    sorted_mem_hogs = identify_hogs(classes_stats, total_memsize)
+    sorted_mem_hogs = identify_hogs(classes_stats, threshold * total_memsize)
     translate_hogs(sorted_mem_hogs)
   end
 
@@ -125,19 +108,13 @@ class Memtf::Analyzer
   # @param [Hash] memory_by_class
   # @param [Fixnum] total_memory_size
   # @return [Hash]
-  def identify_hogs(memory_by_class, total_memory_size)
-    mem_threshold = threshold * total_memory_size
-    mem_hogs, others = {}, []
-    memory_by_class.each_pair do |k,v|
-      if v.sum >= mem_threshold
-        mem_hogs[k] = v
-      else
-        others += v
-      end
+  def identify_hogs(memory_by_class, mem_threshold)
+    hogs, others = memory_by_class.partition do |k,v|
+      v.sum > mem_threshold
     end
 
-    mem_hogs.merge!({'Others*' => others})
-    Hash[mem_hogs.sort_by {|k,v| -v.sum }]
+    hogs << ['Others*', Hash[others].values.flatten]
+    Hash[hogs.sort_by {|k,v| -v.sum }]
   end
 
   # Translate hogs into a suitable format
@@ -160,7 +137,7 @@ class Memtf::Analyzer
 
       smh_hash[k] = {
         count: count,
-        size: size
+        size:  size
       }
     end
     smh_hash
